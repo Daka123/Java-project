@@ -27,20 +27,16 @@ public class JUnitTests {
     public Client client;
     @Before
     public void setUpStreams() {
-        try{
-            new Client(InetAddress.getLocalHost(), 666, "test","test");
-        } catch(Exception e) {}
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
 
     @After
     public void restoreStreams() {
-        client = null; //deletes object
         System.setOut(originalOut);
         System.setErr(originalErr);
     }
-//https://github.com/Gold7G/Java_drive/blob/master/JUnitTests.java
+
     @Test
     public void UncommonFilesTest() throws IOException {
         List<String> all = new ArrayList<>();
@@ -188,56 +184,110 @@ public class JUnitTests {
             fail("Expected exception due to client not running");
         } catch (Exception e) {}
     }
-    //static public void send_files_list (List<String> list, OutputStream stream) throws Exception
-    //public static List<String> get_clients_list(String client) throws Exception
-    //public void synchro_client(MyMap[] filelist, MyMap client_files) throws Exception
-    //public void synchro_server(MyMap[] filelist, MyMap client_files, String client_path) throws Exception{
-    //public void synchro(InputStream stream, String client_path) throws Exception{
-    //public String get_file_name(String file_path){
-    //public void copy_file(String to, String from){
-    //public void update_list(String file, String client, String disc) throws IOException {
-    //public static MyMap get_csv(String disc) throws IOException {
 
-
-
-
-
-    /*//działają
     @Test
-    public void ClientSocketTests() {
+    public void SendFilesListTest(){
         try{
-            assertEquals(client.socket, new Socket(InetAddress.getLocalHost(),666));
-        } catch (Exception e){}
+            Multi_Client.send_files_list(new ArrayList<>(),null);
+            fail("Expected exception due to null stream");
+        } catch (Exception e) {}
     }
+
     @Test
-    public void ClientClientNameTests() {
+    public void GetClientListTest(){
         try{
-            assertEquals(client.client, "test");
-        } catch (Exception e){}
+            Multi_Client.get_clients_list(null);
+            fail("Expected exception due to null client");
+        } catch (Exception e) {}
     }
+
     @Test
-    public void ClientFolderPathTests() {
+    public void SynchroClientNullServerFilesTest(){
         try{
-            assertEquals(client.local_folder_path, "test");
-        } catch (Exception e){}
+            Multi_Client mc = new Multi_Client(new ServerSocket(420), new Socket(InetAddress.getLocalHost(),420));
+            mc.synchro_client(null, new MyMap());
+            fail("Expected exception due to null server file list");
+        } catch (Exception e) {}
     }
+
     @Test
-    public void DelayTests() {
+    public void SynchroClientNullClientFilesTest(){
         try{
-            Discs.delay(1);
-        } catch (Exception e){}
-    }*/
+            Multi_Client mc = new Multi_Client(new ServerSocket(420), new Socket(InetAddress.getLocalHost(),420));
+            mc.synchro_client(new MyMap[2], null);
+            fail("Expected exception due to null client file list");
+        } catch (Exception e) {}
+    }
 
+    @Test
+    public void SynchroServerNullServerFilesTest(){
+        try{
+            Multi_Client mc = new Multi_Client(new ServerSocket(420), new Socket(InetAddress.getLocalHost(),420));
+            mc.synchro_server(null, new MyMap(), "test");
+            fail("Expected exception due to null server file list");
+        } catch (Exception e) {}
+    }
 
-    /*@Test
-    public void nullClientNameTest() {
-        try {
-            new Client(InetAddress.getLocalHost(), 1, null,"test");
-        } catch (Exception e) {
-            System.out.println("Excepted exception for null path to local folder");
-        }
-    }*/
+    @Test
+    public void SynchroServerNullClientFilesTest(){
+        try{
+            Multi_Client mc = new Multi_Client(new ServerSocket(420), new Socket(InetAddress.getLocalHost(),420));
+            mc.synchro_server(new MyMap[2], null, "test");
+            fail("Expected exception due to null client file list");
+        } catch (Exception e) {}
+    }
 
+    @Test
+    public void SynchroServerNullClientPathTest(){
+        try{
+            Multi_Client mc = new Multi_Client(new ServerSocket(420), new Socket(InetAddress.getLocalHost(),420));
+            mc.synchro_server(new MyMap[2], new MyMap(), null);
+            fail("Expected exception due to null client path");
+        } catch (Exception e) {}
+    }
 
+    @Test
+    public void SynchroNullStreamTest(){
+        try{
+            Multi_Client mc = new Multi_Client(new ServerSocket(420), new Socket(InetAddress.getLocalHost(),420));
+            mc.synchro(null, "test");
+            fail("Expected exception due to null stream");
+        } catch (Exception e) {}
+    }
 
+    @Test
+    public void SynchroNullClientPathTest(){
+        try{
+            Multi_Client mc = new Multi_Client(new ServerSocket(420), new Socket(InetAddress.getLocalHost(),420));
+            mc.synchro(System.in, null);
+            fail("Expected exception due to null client path");
+        } catch (Exception e) {}
+    }
+
+    @Test
+    public void UpdateListNullFileTest(){
+        try{
+            Discs d = new Discs("test","test","test",new PrintWriter(System.out));
+            d.update_list(null,"test","test");
+            fail("Expected exception due to null file");
+        } catch (Exception e) {}
+    }
+
+    @Test
+    public void UpdateListNullClietTest(){
+        try{
+            Discs d = new Discs("test","test","test",new PrintWriter(System.out));
+            d.update_list("test",null,"test");
+            fail("Expected exception due to null client");
+        } catch (Exception e) {}
+    }
+
+    @Test
+    public void UpdateListNullDiscTest(){
+        try{
+            Discs d = new Discs("test","test","test",new PrintWriter(System.out));
+            d.update_list("test","test",null);
+            fail("Expected exception due to null disc");
+        } catch (Exception e) {}
+    }
 }
