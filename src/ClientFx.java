@@ -24,11 +24,12 @@ public class ClientFx extends Application {
     private ImageView imageView;
     private boolean slow;
 
+    /**Gets client file list as MyMap and returns lists of client files.*/
     private List<String> get_files(){
 		MyMap filelist = ControlClient.get_file_list(path,user);
     	return new ArrayList<>(filelist.get(user));
 	}
-
+	/**Refreshes client files list and list of other files every 10 seconds.*/
 	private void refresh(){
 	    Thread t = new Thread(() -> {
 	        while(true) {
@@ -49,6 +50,7 @@ public class ClientFx extends Application {
 	    });
 	    t.start();
 	}
+	/**Refreshes status of synchronization every 1 second.*/
 	private void status(){
 	    Thread t = new Thread(() -> {
 	        while(true) {
@@ -72,7 +74,7 @@ public class ClientFx extends Application {
 	    });
 	    t.start();
 	}
-
+	/**View for actual client panel.*/
 	public void Client_Panel(Stage stage) throws Exception {
 		refresh();
 		status();
@@ -87,9 +89,9 @@ public class ClientFx extends Application {
 		hyperlink.setOpacity(0.15);
 		
 
-        hyperlink.setOnAction((event) -> {
-            getHostServices().showDocument("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-        }); 
+        hyperlink.setOnAction((event) ->
+            getHostServices().showDocument("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        );
 
         i = new Client(InetAddress.getLocalHost(), 3002, user, path);
         i.run();
@@ -171,7 +173,7 @@ public class ClientFx extends Application {
       	stage.setScene(scene); 
       	stage.show();      	
 	}
-
+	/**View for Log in panel, that changed to client panel if needed.*/
    	@Override     
    	public void start(Stage stage){
    		//Loging in
@@ -220,11 +222,7 @@ public class ClientFx extends Application {
 		});
 		
 		buttons.getChildren().addAll(clear, submit);
-		//buttons.setAlignment(Pos.CENTER);
-		//GridPane.setConstraints(submit, 2, 0);
-		//grid.getChildren().add(submit);
 
-      	//Creating a Group object  
 		grid.setPadding(new Insets(10, 10, 10, 10));
 		grid.setVgap(5);
 		grid.setHgap(5);

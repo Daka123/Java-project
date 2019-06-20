@@ -4,20 +4,24 @@ import java.util.concurrent.*;
 import java.io.*;
 
 public class ControlClient extends Thread{
-
     Socket socket;
     PrintWriter pw;
     String local_folder_path;
     String client;
-
+    /**ClientControl constructor that takes socket, his local folder path and his name.
+     * @param socket socket took from Client class
+     * @param local_folder_path path to client local folder with files that is synchronized with server
+     * @param client client name, which with he is associated on server*/
     public ControlClient(Socket socket, String local_folder_path, String client) throws IOException{
         this.socket=socket;
         this.pw=new PrintWriter(socket.getOutputStream(), true);
         this.local_folder_path=local_folder_path;
         this.client=client;
     }
-
- 
+    /**Gets files list from client local folder.
+     * @param path - path to folder from which files are taken.
+     * @param client - client name
+     * @return MyMap with key being client name and value being list of files*/
     static public MyMap get_file_list(final String path, String client) {
         final File file = new File(path);
         MyMap filelist = new MyMap();
@@ -26,46 +30,35 @@ public class ControlClient extends Thread{
             list.add(fileEntry.getName());
         Collections.sort(list);
         filelist.put(client, list);
-        //for(Map.Entry e : filelist.entrySet())//do testów
-        //    System.out.println(e.getKey() + " -> " + e.getValue());
         return filelist;
     }
-    
+    /**Sends client files to server.
+     * @param map map of client files, with key being client name and value being list of client files
+     * @param stream stream in which map needs to be send*/
     static public void send_files_map (MyMap map, OutputStream stream) throws Exception {
-        ObjectOutputStream mapOutStream = null;
-        try{
-            TimeUnit.SECONDS.sleep(5);//interruptedexception
-            mapOutStream = new ObjectOutputStream(stream);//exception
-            mapOutStream.writeObject(map);//exception
-        } finally {
-            //mapOutStream.close();//exception
-        }
+        TimeUnit.SECONDS.sleep(5);
+        ObjectOutputStream mapOutStream = new ObjectOutputStream(stream);
+        mapOutStream.writeObject(map);
     }
-    
+    /**Returns list of files, that needs to be saved in client folder, from server.*/
     public List<String> get_server_files_list () throws Exception{
         ObjectInputStream listInStream = new ObjectInputStream(socket.getInputStream());//exception
         List<String> list = (ArrayList<String>) listInStream.readObject();//ioexception, classnotfoundexception
         //mapInStream.close();//exception
         return list;
     }
-
-    public void get_files(List<String> dontHave) throws Exception{
-        //System.out.println(dontHave);
+    /**For every file that client don't have it starts a new thread to download it.
+     * @param dontHave files that client don't have, and needs to download them*/
+    public void get_files(List<String> dontHave){
         for(ListIterator<String> u = dontHave.listIterator(); u.hasNext(); ){
-            //u.next();
             new SaveFiles(u.next(), local_folder_path + "\\", this.pw).start();
-            //disc.copy_file(local_folder_path + "\\", u.next());
         }
     }
-
+    /**Synchronizes files between client and server.*/
     public void run(){
-
         System.out.println("Connected with server.");
         Client.status = "Connected with server";
-        //System.out.println(status);
-        
-        MyMap files = new MyMap();        
-
+        MyMap files = new MyMap();
         try{
             try{
                 Scanner scan = new Scanner(socket.getInputStream());

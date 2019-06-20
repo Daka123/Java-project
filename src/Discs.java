@@ -11,20 +11,25 @@ public class Discs extends Thread {
 	String client;
 	String file_path;
 	PrintWriter pw;
-		
+	/**Discs constructor that don't need any parameters used with functions that don't need full constructor.*/
 	public Discs(){}//to allow using other methods
-
+	/**Discs constructor that takes disc, client, filepath, and PrintWriter as parameters.
+	 * @param disc disc on which given operations will be made
+	 * @param client client name for who given operations will be made
+	 * @param file_path path to file which is needed to be saved on server
+	 * @param pw stream which is used to communicate with client, to send him messages*/
 	public Discs(String disc, String client, String file_path, PrintWriter pw){
 		this.disc=disc;
 		this.client=client;
 		this.file_path=file_path;
 		this.pw=pw;
-		//init();
 	}
+	/**Delays a thread on given seconds.
+	 * @param sleep number on seconds of which thread will be sleeping*/
 	public static void delay(int sleep) throws Exception {
 		TimeUnit.SECONDS.sleep(sleep);
 	}
-	
+	/**Saves files on given disc and updates .csv file*/
 	public void run(){
     	try {
     		String server_path = null;
@@ -49,18 +54,22 @@ public class Discs extends Thread {
             System.out.println("Server error");
         } 
 	}  
-
+	/**Gets file name from full path
+	 * @param file_path file path from which file name is needed to be taken
+	 * @return just a file name*/
 	public String get_file_name(String file_path){
 		String separator ="\\";
 		int lastIndexOf = file_path.lastIndexOf(separator);
-		String file_name = new String(file_path.substring(lastIndexOf + 1));
+		String file_name = file_path.substring(lastIndexOf + 1);
 		return file_name;
 	}
-
+	/**Copies file given file in given path.
+	 * @param to path to folder in which the file is needed to be saved
+	 * @param from file that needs to be saved*/
 	public void copy_file(String to, String from){
 		try{
 			Random rand = new Random();
-			int sleep = rand.nextInt(11);//zmienić na 61 jak już skończę
+			int sleep = rand.nextInt(11);
 			System.out.println("Waiting "+sleep+" seconds.");
 	        TimeUnit.SECONDS.sleep(sleep); //Spowalnniacz xD
 			to += get_file_name(from);
@@ -77,7 +86,10 @@ public class Discs extends Thread {
 			System.out.println("Error while copying file.");
 		}
 	}
-
+	/**Updates .csv list which contains lists of client and it's files saved on given disc
+	 * @param file file that needs to be added
+	 * @param client client to whom file is needed to be added
+	 * @param disc disc on which .csv file is needed to be updated*/
 	public void update_list(String file, String client, String disc) throws IOException {
 		//ReadWriteLock
 		ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -121,7 +133,9 @@ public class Discs extends Thread {
 		
 		//System.out.println("Na razie nie updejtuje pliku xd");
 	}
-
+	/**Reeds clients and their files from .csv file.
+	 * @param disc disc from which files and clients are needed to be taken
+	 * @return MyMap whit all clients and their files that have them saved on given disc*/
 	public static MyMap get_csv(String disc) throws IOException {
 		ReadWriteLock lock = new ReentrantReadWriteLock();
 		Lock readLock = lock.readLock();
@@ -146,18 +160,12 @@ public class Discs extends Thread {
 		MyMap filelist = new MyMap();
 		for(int i=0; i<clients.length; i++){
 			index = clients[i].indexOf(",");
-			client[i] = new String(clients[i].substring(0,index));
+			client[i] = clients[i].substring(0,index);
 			String[] files_for_client = clients[i].substring(index+1, clients[i].length()-1).split(",");
 			List<String> files_as_list = Arrays.asList(files_for_client);
 			Collections.sort(files_as_list);
 			filelist.put(client[i], files_as_list);
 		}
-		//Jak zakomentować fragment kodu - Zaznaczyć fragment i ctrl+shift+/
-
-		//System.out.println(disc);
-		// for(Map.Entry e : filelist.entrySet())//do testów
-        //     System.out.println(e.getKey() + " -> " + e.getValue());
-						
         return filelist;
 	}
 

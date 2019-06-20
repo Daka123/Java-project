@@ -9,13 +9,14 @@ public class Server{
     public ServerSocket serv;
     Socket sock;
     public static String status;
-		
+    /**Server construcor that tahes port as an argument.
+	 * @param port number of port*/
 	public Server(int port) throws IOException {
 		this.status = "Running...";
 		serv = new ServerSocket(port);
 		System.out.println("Server is running...");
 	}
-
+	/**For every new client it starts a thread to handle synchronization.*/
 	public void run(){
 		try{
 			while(true){

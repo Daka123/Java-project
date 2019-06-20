@@ -22,7 +22,6 @@ public class JUnitTests {
     private final PrintStream originalOut = System.out;
     private final PrintStream originalErr = System.err;
 
-    public Client client;
     @Before
     public void setUpStreams() {
         System.setOut(new PrintStream(outContent));
@@ -58,7 +57,7 @@ public class JUnitTests {
 
     @Test
     public void GetFileListTest(){
-        MyMap test = ControlClient.get_file_list("E:\\Sem4\\PO2 aka Java\\Project\\src\\Classes\\tests", "test");
+        MyMap test = ControlClient.get_file_list("E:\\Sem4\\PO2 aka Java\\Project\\src\\tests", "test");
         List<String> list= new ArrayList<>();
         list.add("test1.txt");
         list.add("test2.txt");

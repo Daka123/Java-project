@@ -14,19 +14,21 @@ public class Multi_Client extends Thread {
 	PrintWriter pw;
 	Scanner scan;
 	String msg;
-	
+	/**Multi_Client constructor that takes ServerSocket and Socket as arguments.
+	 * @param server ServerSocket took form Server class
+	 * @param socket Socket took form Server class*/
 	public Multi_Client(ServerSocket server, Socket socket) throws IOException{
 		this.server=server;
 		this.socket=socket;
 		init();
 	}
-
+	/**Initializes PrintWriter, Scanner and String*/
 	public void init() throws IOException {
 		this.pw = new PrintWriter(socket.getOutputStream(), true);
 		this.scan = new Scanner(socket.getInputStream());
 		this.msg = new String();			
 	}
-
+	/**Chooses disc with the least amount of space taken*/
 	public String choose_disc() throws IOException{
 		int index=1;
 		long min = 0;
@@ -39,17 +41,18 @@ public class Multi_Client extends Thread {
 				index = i+1;
 			}
 		}
-		//System.out.println("d" + index + " choosed.");
 		return "d"+index;
 	}
-
+	/**Gets MyMap from client with his files list.*/
 	public MyMap get_client_files_map () throws Exception{
 		ObjectInputStream mapInStream = new ObjectInputStream(socket.getInputStream());//exception
 		MyMap map = (MyMap) mapInStream.readObject();//ioexception, classnotfoundexception
 		//mapInStream.close();//exception
 		return map;
 	}
-
+	/**Returns a list of uncommon files between two lists.
+	 * @param want list from which you delets files to leave files hat you want
+	 * @param dont list os files that you dont want*/
 	public List<String> uncommon_files(List<String> want, List<String> dont){
 		List<String> notPresent = new ArrayList<String>(want);
 		notPresent.removeAll(dont);
@@ -58,36 +61,34 @@ public class Multi_Client extends Thread {
 		//System.out.println(notPresent);
 		return notPresent;
 	}
-
+	/**Sends list of files that client dont have to him
+	 * @param list list that will be send to client
+	 * @param stream stream used to send list*/
 	static public void send_files_list (List<String> list, OutputStream stream) throws Exception {
-        ObjectOutputStream listOutStream = null;
-        try{
-            TimeUnit.SECONDS.sleep(5);//interruptedexception
-            listOutStream = new ObjectOutputStream(stream);//exception
-            listOutStream.writeObject(list);//exception
-        } finally {
-            //mapOutStream.close();//exception
-        }
+        TimeUnit.SECONDS.sleep(5);
+		ObjectOutputStream listOutStream = new ObjectOutputStream(stream);
+		listOutStream.writeObject(list);
     }
-
+	/**Gets lists of clients from all discs
+	 * @param client client that will be removed from list*/
     public static List<String> get_clients_list(String client) throws Exception{
         Discs disc = new Discs();
         List<String> clients = new ArrayList<String>();
         MyMap[] filelist = new MyMap[5];
 
         for(int i=0; i<5; i++){
-			filelist[i] = disc.get_csv("d" + (i+1));//ioexception
+			filelist[i] = disc.get_csv("d" + (i+1));
 			for(String key : filelist[i].keySet()){
 				if(!clients.contains(key))
 					clients.add(key);
 			}	
 		}
 		clients.remove(client);
-
 		return clients;
-
     }
-
+	/**Synchronizes saving files on client side.
+	 * @param filelist list of files from all discs
+	 * @param client_files list of client files*/
 	public void synchro_client(MyMap[] filelist, MyMap client_files) throws Exception{//from client to server
 		Discs disc = new Discs();
 		List<String>[] withDisc = new ArrayList[5];
@@ -120,7 +121,10 @@ public class Multi_Client extends Thread {
 		send_files_list(dontHave, socket.getOutputStream());
 
 	}
-
+	/**Synchronizes saving files on server side.
+	 * @param filelist list of files from all discs
+	 * @param client_files list of client files
+	 * @param client_path path to client folder*/
 	public void synchro_server(MyMap[] filelist, MyMap client_files, String client_path) throws Exception{//from server to client
 		Discs disc = new Discs();
 
@@ -169,7 +173,9 @@ public class Multi_Client extends Thread {
 			//this.pw.println("Saved");
 			}
 	}
-		
+	/**Synchronizes all sending and receiving files between client and server
+	 * @param stream stream from which client files will be taken
+	 * @param client_path path to client folder*/
 	public void synchro(InputStream stream, String client_path) throws Exception{
 		Discs disc = new Discs();
 
@@ -185,11 +191,6 @@ public class Multi_Client extends Thread {
 		//got files map
 		this.pw.println("Got");
 		
-
-		// System.out.println("Client files: ");
-		// for(Map.Entry e : client_files.entrySet())//do testów
-  		// System.out.println(e.getKey() + " -> " + e.getValue());
-		// System.out.println("Server files: ");
 		MyMap[] filelist = new MyMap[5];
 		
 		//System.out.println("SERVER");
@@ -237,8 +238,7 @@ public class Multi_Client extends Thread {
             System.out.println("Error while copying files");
         }
 	}
-
-
+	/**If client and server are ready it starts synchronization, and control status of it.*/
 	public void run(){ 
 		try {
 			try {

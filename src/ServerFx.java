@@ -18,7 +18,8 @@ public class ServerFx extends Application {
 	private List[] files;
 	private Label status;
 	private ObservableList<String> items1,items2,items3,items4,items5;
-
+	/**Gets files list form given disc.
+	 * @param disc disc from which files list needs to be read*/
 	private List<String> get_files(int disc){
 		final File file = new File("Server\\d" + disc + "\\");
         List<String> list = new ArrayList<>();
@@ -28,7 +29,7 @@ public class ServerFx extends Application {
         Collections.sort(list);
         return list;
 	}
-
+	/**Sets list for given disc*/
 	private void setLists(int i){
 		try{
 			if(i == 1) {
@@ -53,7 +54,7 @@ public class ServerFx extends Application {
 			}
 		} catch(Exception e) {}
 	}
-
+	/**Refreshes files lists for all discs every 5 seconds.*/
 	private void refresh(){
 	    try {
             Thread t = new Thread(() -> {
@@ -64,24 +65,9 @@ public class ServerFx extends Application {
                             for(int i=0; i<5; i++){
                                 try {
                                     files[i] = get_files(i+1);
-                                    //System.out.println(files[i]);
-                                    /*if(files[i] != null && files[i].size() > 0)*/
                                     setLists(i);
                                 } catch (Exception e) {}
                             }
-                            /*filelist = new MyMap[5];
-                            files = new ArrayList[5];
-                            for(int i=0; i<5; i++){
-                                try {
-                                    filelist[i] = Discs.get_csv("d" + (i+1));//ioexception
-                                    files[i] = new ArrayList<String>();
-                                    for(String key : filelist[i].keySet()){
-                                        files[i].addAll(filelist[i].get(key));
-                                    }
-                                    if(files[i] != null && files[i].size() > 0) try {setLists(i);} catch(Exception e) {}
-
-                                } catch (Exception e) {}
-                            }*/
                         });
                         Discs.delay(5);
                     } catch (Exception e) {}
@@ -90,6 +76,7 @@ public class ServerFx extends Application {
             t.start();
 	    }catch (Exception e) {}
 	}
+	/**Refreshes status of synchronization every 1 second.*/
 	private void status(){
         try{
             Thread t = new Thread(() -> {
@@ -105,10 +92,9 @@ public class ServerFx extends Application {
             t.start();
         } catch (Exception e) {}
 	}
-
-
+	/**View for server panel.*/
    	@Override
-   	public void start(Stage stage) throws Exception {
+   	public void start(Stage stage){
    		refresh();
    		status();
 
@@ -130,7 +116,7 @@ public class ServerFx extends Application {
         name.setLayoutX(200);
 		name.setLayoutY(10);
 		name.setTextFill(Color.BLACK);
-		name.setFont(Font.font("Miriam Fixed", FontWeight.BOLD, 30));
+		name.setFont(Font.font("MS Reference Sans Serif", FontWeight.BOLD, 30));//"Miriam Fixed"
 
 		status = new Label(" ");
         status.setLayoutX(350);
@@ -169,7 +155,7 @@ public class ServerFx extends Application {
 
 		for(int i=0; i<5; i++){
 			try{
-			    filelist[i] = disc.get_csv("d" + (i+1));//ioexception
+			    filelist[i] = disc.get_csv("d" + (i+1));
                 files[i] = new ArrayList<String>();
                 for(String key : filelist[i].keySet()){
                     files[i].addAll(filelist[i].get(key));
@@ -220,7 +206,7 @@ public class ServerFx extends Application {
 		d5.setPrefWidth(width);
 
 		ImageView background = new ImageView(new Image("Nobody expects.png",810,370,false,true));
-		background.setOpacity(0.1);
+		background.setOpacity(0.05);
 
 		Group root = new Group(background,name,status,ld1,ld2,ld3,ld4,ld5,d1,d2,d3,d4,d5,hyperlink);
 
