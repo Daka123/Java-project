@@ -20,7 +20,7 @@ public class ServerFx extends Application {
 	private ObservableList<String> items1,items2,items3,items4,items5;
 	/**Gets files list form given disc.
 	 * @param disc disc from which files list needs to be read*/
-	private List<String> get_files(int disc){
+	public List<String> get_files(int disc){
 		final File file = new File("Server\\d" + disc + "\\");
         List<String> list = new ArrayList<>();
         for (final File fileEntry : file.listFiles())
@@ -30,7 +30,7 @@ public class ServerFx extends Application {
         return list;
 	}
 	/**Sets list for given disc*/
-	private void setLists(int i){
+	public void setLists(int i){
 		try{
 			if(i == 1) {
 				items1.clear();
@@ -55,7 +55,7 @@ public class ServerFx extends Application {
 		} catch(Exception e) {}
 	}
 	/**Refreshes files lists for all discs every 5 seconds.*/
-	private void refresh(){
+	public void refresh(){
 	    try {
             Thread t = new Thread(() -> {
                 while(true) {
@@ -77,7 +77,7 @@ public class ServerFx extends Application {
 	    }catch (Exception e) {}
 	}
 	/**Refreshes status of synchronization every 1 second.*/
-	private void status(){
+	public void status(){
         try{
             Thread t = new Thread(() -> {
                 while(true) {

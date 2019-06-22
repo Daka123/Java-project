@@ -25,12 +25,12 @@ public class ClientFx extends Application {
     private boolean slow;
 
     /**Gets client file list as MyMap and returns lists of client files.*/
-    private List<String> get_files(){
+    public List<String> get_files(){
 		MyMap filelist = ControlClient.get_file_list(path,user);
     	return new ArrayList<>(filelist.get(user));
 	}
 	/**Refreshes client files list and list of other files every 10 seconds.*/
-	private void refresh(){
+    public void refresh(){
 	    Thread t = new Thread(() -> {
 	        while(true) {
 	            try {
@@ -51,7 +51,7 @@ public class ClientFx extends Application {
 	    t.start();
 	}
 	/**Refreshes status of synchronization every 1 second.*/
-	private void status(){
+    public void status(){
 	    Thread t = new Thread(() -> {
 	        while(true) {
 	            try {
