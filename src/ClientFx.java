@@ -1,3 +1,4 @@
+import java.io.File;
 import java.net.InetAddress;
 import java.util.*; 
 
@@ -35,9 +36,9 @@ public class ClientFx extends Application {
 	        while(true) {
 	            try {
 	                Platform.runLater(() -> {
-	                	try {
-	                		other = Multi_Client.get_clients_list(user);
-	                	} catch (Exception e) {}
+						try {
+							other = Multi_Client.get_clients_list(user);
+						} catch (Exception e) {}
 	                	client_files = get_files();
 				    	items.clear();
 				    	if(client_files != null && client_files.size() > 0)
@@ -68,7 +69,7 @@ public class ClientFx extends Application {
 	                		}
 	                	}	    		   
 	                });
-	                Discs.delay(5);
+	                Discs.delay(1);
 	            } catch (Exception e) {}
 	        }
 	    });
@@ -93,8 +94,10 @@ public class ClientFx extends Application {
             getHostServices().showDocument("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
         );
 
-        i = new Client(InetAddress.getLocalHost(), 3002, user, path);
-        i.run();
+        if(i == null){
+			i = new Client(InetAddress.getLocalHost(), 3002, user, path);
+			i.run();
+		}
 
     	//wyglądu listy nie ruszamy xD
     	client_files = get_files();
@@ -118,8 +121,8 @@ public class ClientFx extends Application {
 		Label status_text = new Label("Status: ");
 		status_text.setLayoutX(430);
 		status_text.setLayoutY(10);
-		status = new Label(" ");
 
+		status = new Label(" ");
         status.setLayoutX(430);
 		status.setLayoutY(25);
 		
@@ -127,8 +130,7 @@ public class ClientFx extends Application {
         label.setLayoutX(430);
 		label.setLayoutY(180);//130
 
-        ObservableList<String> options = 
-		    FXCollections.observableArrayList(other);
+		ObservableList<String> options =  FXCollections.observableArrayList(other);
 		ComboBox clients = new ComboBox(options);
 		clients.setLayoutX(430);
 		clients.setLayoutY(200);//150
@@ -165,13 +167,15 @@ public class ClientFx extends Application {
 		share.setPrefHeight(30);
 		share.setPrefWidth(100);
 
+		/*i = new Client(InetAddress.getLocalHost(), 3002, user, path);
+		i.run();*/
+
 		Group root = new Group(list,imageView,status_text,status,label,error,clients,share,hyperlink);
 		scene = new Scene(root ,550, 320);
 		Color color = Color.web("#a3beed");//#3264dd
 		stage.setTitle("Client " + user);
       	scene.setFill(color);
-      	stage.setScene(scene); 
-      	stage.show();      	
+      	stage.setScene(scene);
 	}
 	/**View for Log in panel, that changed to client panel if needed.*/
    	@Override     
@@ -203,11 +207,15 @@ public class ClientFx extends Application {
             else if(name.getText().isEmpty()) {
                 comment.setText("You didn't provide username.");
             }
+			else if(!new File(folder_path.getText()).exists()) {
+				comment.setText("Folder doesn't exists.");
+			}
             else {
                 user = name.getText();
                 path =  folder_path.getText();
                 try{
-                    Client_Panel(stage);
+					comment.setText("Wait while panel is loading...");
+					Client_Panel(stage);
                 } catch(Exception e){
                     //e.printStackTrace();
                     System.out.println("Error while loading client panel");
@@ -219,6 +227,7 @@ public class ClientFx extends Application {
 		clear.setOnAction((event) -> {
             name.clear();
             folder_path.clear();
+            comment.setText(" ");
 		});
 		
 		buttons.getChildren().addAll(clear, submit);
